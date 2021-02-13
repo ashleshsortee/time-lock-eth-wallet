@@ -23,13 +23,13 @@ contract TimeLockWallet {
         _;
     }
 
-    constructor(
+    function init(
         IERC20 token_,
         address beneficiary_,
         address creator_,
         uint256 createdTime_,
         uint256 releaseTime_
-    ) public {
+    ) external {
         // solhint-disable-next-line not-rely-on-time
         require(
             releaseTime_ > block.timestamp,

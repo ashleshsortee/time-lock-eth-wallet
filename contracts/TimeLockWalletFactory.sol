@@ -1,10 +1,13 @@
 pragma solidity ^0.6.0;
 
 import "./TimeLockWallet.sol";
+import "./CloneFactory.sol";
 
-contract TimeLockWalletFactory {
+contract TimeLockWalletFactory is CloneFactory {
     TimeLockWallet public newWallet;
+
     mapping(address => address[]) wallets;
+    address masterContract;
 
     event Created(
         address indexed wallet,
@@ -15,12 +18,19 @@ contract TimeLockWalletFactory {
         uint256 amount
     );
 
+    constructor(address _masterContract) public {
+        masterContract = _masterContract;
+    }
+
     function createNewWallet(
         IERC20 token,
         address beneficiary,
         uint256 releaseTime
     ) public payable returns (bool) {
-        newWallet = new TimeLockWallet(
+        TimeLockWallet timeLockWallet =
+            TimeLockWallet(createClone(masterContract));
+
+        timeLockWallet.init(
             token,
             beneficiary,
             msg.sender,
@@ -28,10 +38,10 @@ contract TimeLockWalletFactory {
             releaseTime
         );
 
-        wallets[beneficiary].push(address(newWallet));
+        wallets[beneficiary].push(address(timeLockWallet));
 
         emit Created(
-            address(newWallet),
+            address(timeLockWallet),
             beneficiary,
             msg.sender,
             releaseTime,
