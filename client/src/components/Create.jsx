@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import WalletFactory from '../proxies/WalletFactory';
-import Token from '../proxies/Token';
+import walletFactory from '../proxies/WalletFactory';
+import tokenInstance from '../proxies/Token';
 import Wallet from '../proxies/Wallet';
 import renderNotification from '../utils/notification-handler';
 
@@ -25,8 +25,8 @@ class Create extends Component {
       e.preventDefault();
       const sender = await web3.eth.getCoinbase();
       const { receiver, unlockDate, token, ether } = this.state;
-
-      const result = await WalletFactory.methods.createNewWallet(Token._address, receiver, new Date(unlockDate).getTime() / 1000).send({
+      console.log('console wallefactory', tokenInstance);
+      const result = await walletFactory.methods.createNewWallet(tokenInstance._address, receiver, new Date(unlockDate).getTime() / 1000).send({
         from: sender,
         gas: 6700000,
       });
@@ -42,7 +42,7 @@ class Create extends Component {
       }
 
       if (token) {
-        await Token.methods.transfer(walletAddress, web3.utils.toWei(token, 'ether')).send({ from: sender, gas: 670000 });
+        await tokenInstance.methods.transfer(walletAddress, web3.utils.toWei(token, 'ether')).send({ from: sender, gas: 670000 });
         renderNotification('success', 'Success', `Token locked successfully!`);
       }
     } catch (err) {

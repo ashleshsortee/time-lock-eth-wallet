@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import WalletFactory from '../proxies/WalletFactory';
+import walletFactory from '../proxies/WalletFactory';
 import Wallet from '../proxies/Wallet';
-import Token from '../proxies/Token';
+import tokenInstance from '../proxies/Token';
 import renderNotification from '../utils/notification-handler';
 
 let web3;
@@ -30,12 +30,12 @@ class Topup extends Component {
 
 
       if (ether) {
-        await walletInstance.methods.depositEther().send({ from: sender, gas: 670000, value: ether });
+        await walletInstance.methods.depositEther().send({ from: sender, gas: 670000, value: web3.utils.toWei(ether, 'ether') });
         renderNotification('success', 'Success', `Ether locked successfully!`);
       }
 
       if (token) {
-        await Token.methods.transfer(wallet, token).send({ from: sender, gas: 670000 });
+        await tokenInstance.methods.transfer(wallet, web3.utils.toWei(token, 'ether')).send({ from: sender, gas: 670000 });
         renderNotification('success', 'Success', `Token locked successfully!`);
       }
     } catch (err) {
@@ -46,7 +46,7 @@ class Topup extends Component {
 
   updateWalletsList = async (receiver) => {
     const sender = await web3.eth.getCoinbase();
-    const walletList = await WalletFactory.methods.getWalletList(receiver).call({ from: sender });
+    const walletList = await walletFactory.methods.getWalletList(receiver).call({ from: sender });
 
     const renderData = walletList.map((wallet, i) => (
       <option value={wallet} >{wallet}</option>

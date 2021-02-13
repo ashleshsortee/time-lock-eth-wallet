@@ -1,5 +1,4 @@
 import Provider from './Provider';
-// import WalletContract from '../build/TimeLockedWallet.json';
 import walletABI from '../constants';
 
 const provider = new Provider();

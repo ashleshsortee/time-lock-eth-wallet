@@ -1,15 +1,23 @@
 import Provider from './Provider';
-import Token from '../build/AshToken.json';
+import AshToken from '../build/AshToken.json';
 
 const provider = new Provider();
 
-const WalletFactory = (() => {
-  const web3 = provider.web3;
-  const deploymentKey = Object.keys(Token.networks)[0];
-  return new web3.eth.Contract(
-    Token.abi,
-    Token.networks[deploymentKey].address,
-  );
-})();
+class Token {
+  constructor() {
+    const web3 = provider.web3;
+    const deploymentKey = Object.keys(AshToken.networks)[0];
 
-export default WalletFactory;
+    this.instance = new web3.eth.Contract(
+      AshToken.abi,
+      AshToken.networks[deploymentKey].address,
+    );
+  }
+
+  getInstance = () => this.instance;
+}
+
+const token = new Token();
+Object.freeze(token);
+
+export default token.getInstance();
