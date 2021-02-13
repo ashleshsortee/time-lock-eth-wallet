@@ -18,6 +18,11 @@ contract TimeLockWallet {
 
     uint256 private _createdTime;
 
+    modifier onlyOwner {
+        require(msg.sender == _beneficiary);
+        _;
+    }
+
     constructor(
         IERC20 token_,
         address beneficiary_,
@@ -69,9 +74,12 @@ contract TimeLockWallet {
     /**
      * @notice Transfers tokens held by timelock to beneficiary.
      */
-    function releaseToken() public virtual {
+    function releaseToken() public virtual onlyOwner {
         // solhint-disable-next-line not-rely-on-time
-        // require(block.timestamp >= releaseTime(), "TokenTimelock: current time is before release time");
+        require(
+            block.timestamp >= releaseTime(),
+            "TokenTimelock: current time is before release time"
+        );
 
         uint256 amount = token().balanceOf(address(this));
         require(amount > 0, "TokenTimelock: no tokens to release");
@@ -85,9 +93,12 @@ contract TimeLockWallet {
         return address(this).balance;
     }
 
-    function releaseEther() public {
+    function releaseEther() public onlyOwner {
         // solhint-disable-next-line not-rely-on-time
-        // require(block.timestamp >= releaseTime(), "Current time is before release time");
+        require(
+            block.timestamp >= releaseTime(),
+            "Current time is before release time"
+        );
 
         uint256 amount = address(this).balance;
         require(amount > 0, "No Ethers to release");

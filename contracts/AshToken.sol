@@ -5,6 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract AshToken is Context, ERC20 {
     constructor() public ERC20("AshToken", "ASH") {
-        _mint(_msgSender(), 10000 * (10**uint256(2)));
+        _mint(_msgSender(), 10000 * (10**uint256(decimals())));
     }
 }
